@@ -435,31 +435,32 @@ resource "aws_api_gateway_stage" "prod" {
 resource "aws_lambda_permission" "apigw_list_products" {
   statement_id  = "AllowExecutionFromAPIGateway"
   action        = "lambda:InvokeFunction"
-  function_name = split(":", var.list_products_arn)[6]
+  function_name = var.list_products_function_name
   principal     = "apigateway.amazonaws.com"
-  source_arn    = "${aws_api_gateway_rest_api.api.execution_arn}/*/*/*"
+  source_arn    = "${aws_api_gateway_rest_api.api.execution_arn}/*"
+
 }
 
 resource "aws_lambda_permission" "apigw_add_to_cart" {
   statement_id  = "AllowExecutionFromAPIGateway"
   action        = "lambda:InvokeFunction"
-  function_name = split(":", var.add_to_cart_arn)[6]
+  function_name = var.add_to_cart_function_name
   principal     = "apigateway.amazonaws.com"
-  source_arn    = "${aws_api_gateway_rest_api.api.execution_arn}/*/*/*"
+  source_arn    = "${aws_api_gateway_rest_api.api.execution_arn}/*"
 }
 
 resource "aws_lambda_permission" "apigw_get_cart" {
   statement_id  = "AllowExecutionFromAPIGateway"
   action        = "lambda:InvokeFunction"
-  function_name = split(":", var.get_cart_arn)[6]
+  function_name = var.get_cart_function_name
   principal     = "apigateway.amazonaws.com"
-  source_arn    = "${aws_api_gateway_rest_api.api.execution_arn}/*/*/*"
+  source_arn    = "${aws_api_gateway_rest_api.api.execution_arn}/*"
 }
 
 resource "aws_lambda_permission" "apigw_remove_from_cart" {
   statement_id  = "AllowExecutionFromAPIGateway"
   action        = "lambda:InvokeFunction"
-  function_name = split(":", var.remove_from_cart_arn)[6]
+  function_name = var.remove_from_cart_function_name
   principal     = "apigateway.amazonaws.com"
-  source_arn    = "${aws_api_gateway_rest_api.api.execution_arn}/*/*/*"
+  source_arn    = "${aws_api_gateway_rest_api.api.execution_arn}/*"
 }

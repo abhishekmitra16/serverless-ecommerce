@@ -39,7 +39,7 @@ def lambda_handler(event, context):
         response = products_table.scan()
         return {
             'statusCode': 200,
-            'body': json.dumps(response['Items'])
+            'body': json.dumps(response['Items'], default=float)
         }
     except Exception as e:
         # Handle any unexpected errors and return 500 response

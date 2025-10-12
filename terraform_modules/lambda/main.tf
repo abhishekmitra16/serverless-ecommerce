@@ -4,28 +4,37 @@ resource "null_resource" "install_dependencies" {
   
   triggers = {
     requirements_hash = filesha256("${path.module}/../../requirements.txt")
+    modules_hash      = sha1(join("", [for f in fileset("${path.module}/../../lambda_functions/modules", "**"): filesha256("${path.module}/../../lambda_functions/modules/${f}")]))
   }
   
   provisioner "local-exec" {
     command = <<EOT
-      mkdir -p ${path.module}/python
-      pip install -r ${path.module}/../../requirements.txt -t ${path.module}/python
-      cd ${path.module}
-      zip -r lambda_layer.zip python
+      mkdir -P ${path.module}/lambda_layer/python
+      pip3 install -r ${path.module}/../../requirements.txt -t ${path.module}/lambda_layer/python
+      
+      cp -r ${path.module}/../../lambda_functions/modules ${path.module}/lambda_layer/python/
+     
     EOT
   }
 }
 
 
-resource "aws_lambda_layer_version" "dependencies_layer" {
-  filename          = "${path.module}/lambda_layer.zip"
-  layer_name        = "ecommerce_dependencies_layer"
-  compatible_runtimes = ["python3.12"]
+data "archive_file" "layer_zip" {
+  type        = "zip"
+  source_dir  = "${path.module}/lambda_layer"
+  output_path = "${path.module}/lambda_layer.zip"
 
   depends_on = [null_resource.install_dependencies]
-
 }
 
+resource "aws_lambda_layer_version" "dependencies_layer" {
+  filename            = data.archive_file.layer_zip.output_path
+  source_code_hash   = data.archive_file.layer_zip.output_base64sha256
+  layer_name         = "ecommerce_dependencies_layer"
+  compatible_runtimes = ["python3.12"]
+
+  depends_on = [data.archive_file.layer_zip]
+}
 
 # Lambda Functions
 data "archive_file" "list_products_zip" {
@@ -113,6 +122,7 @@ resource "aws_lambda_function" "list_products" {
     variables = {
         USER_POOL_ID = var.user_pool_id
         REGION       = var.region
+        APP_CLIENT_ID= var.app_client_id
     }
   }
 }
@@ -131,6 +141,7 @@ layers = [aws_lambda_layer_version.dependencies_layer.arn]
     variables = {
         USER_POOL_ID = var.user_pool_id
         REGION       = var.region
+        APP_CLIENT_ID= var.app_client_id
     }
   }
 }
@@ -149,6 +160,7 @@ layers = [aws_lambda_layer_version.dependencies_layer.arn]
     variables = {
         USER_POOL_ID = var.user_pool_id
         REGION       = var.region
+        APP_CLIENT_ID= var.app_client_id
     }
   }
 }
@@ -167,6 +179,7 @@ resource "aws_lambda_function" "remove_from_cart" {
     variables = {
         USER_POOL_ID = var.user_pool_id
         REGION       = var.region
+        APP_CLIENT_ID= var.app_client_id
     }
   }
 }

@@ -22,3 +22,8 @@ variable "user_pool_id" {
   description = "ID of the Cognito User Pool"
   type        = string
 }
+
+variable "app_client_id" {
+  description = "ID of the audience for Cognito User Pool"
+  type = string
+}

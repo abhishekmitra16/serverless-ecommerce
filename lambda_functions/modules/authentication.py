@@ -6,11 +6,12 @@ This module provides authentication utilities for validating JWT tokens issued b
 It implements JWT validation using the RS256 algorithm and JWKS (JSON Web Key Set) from Cognito.
 """
 
+
 from jose import jwk, jwt as jose_jwt, exceptions
 from jose.utils import base64url_decode
 import requests
 
-def validate_token(token, user_pool_id, region='ap-south-1'):
+def validate_token(token, user_pool_id, app_client_id, region='ap-south-1'):
     """
     Validate a JWT token issued by AWS Cognito.
     
@@ -22,7 +23,13 @@ def validate_token(token, user_pool_id, region='ap-south-1'):
     Returns:
         bool: True if token is valid, False otherwise
     """
+    token = str(token)
     
+    # print(token)
+    # print(user_pool_id)
+
+    app_client_id="5bhu423vjh98oul5uida66at9q"
+
     jwks_url = f'https://cognito-idp.{region}.amazonaws.com/{user_pool_id}/.well-known/jwks.json'
 
     try:
@@ -44,7 +51,7 @@ def validate_token(token, user_pool_id, region='ap-south-1'):
             raise ValueError('Unable to find appropriate key')
 
         # Validate the token
-        payload = jose_jwt.decode(token, rsa_key, algorithms=['RS256'])
+        payload = jose_jwt.decode(token, rsa_key, algorithms=['RS256'], audience=app_client_id)
         return True
     except (ValueError, exceptions.JWSError, Exception) as e:
         print(f"Token validation error: {e}")

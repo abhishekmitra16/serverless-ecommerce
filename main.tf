@@ -1,7 +1,3 @@
-# Configure the AWS Provider
-provider "aws" {
-  region = var.region
-}
 
 # Get current AWS account ID for resource naming and ARN construction
 data "aws_caller_identity" "current" {}
@@ -31,6 +27,7 @@ module "lambda" {
   region             = var.region
   account_id         = data.aws_caller_identity.current.account_id
   user_pool_id       = module.cognito.user_pool_id
+  app_client_id      = module.cognito.user_pool_client_id
 }
 
 # API Gateway module for RESTful API endpoints with Cognito authorization
@@ -43,5 +40,11 @@ module "api_gateway" {
   add_to_cart_arn      = module.lambda.add_to_cart_arn
   get_cart_arn         = module.lambda.get_cart_arn
   remove_from_cart_arn = module.lambda.remove_from_cart_arn
+  list_products_function_name = module.lambda.list_products_name
+  add_to_cart_function_name   = module.lambda.add_to_cart_name
+  get_cart_function_name      = module.lambda.get_cart_name
+  remove_from_cart_function_name = module.lambda.remove_from_cart_name
+
+  depends_on = [module.lambda]
 }
     
