@@ -23,12 +23,7 @@ def validate_token(token, user_pool_id, app_client_id, region='ap-south-1'):
     Returns:
         bool: True if token is valid, False otherwise
     """
-    token = str(token)
     
-    # print(token)
-    # print(user_pool_id)
-
-    app_client_id="5bhu423vjh98oul5uida66at9q"
 
     jwks_url = f'https://cognito-idp.{region}.amazonaws.com/{user_pool_id}/.well-known/jwks.json'
 
@@ -36,7 +31,7 @@ def validate_token(token, user_pool_id, app_client_id, region='ap-south-1'):
         # Fetch JWKS
         jwks_response = requests.get(jwks_url)
         jwks = jwks_response.json()
-        unverified_header = jose_jwt.get_unverified_header(token) 
+        unverified_header = jose_jwt.get_unverified_header(str(token)) 
         rsa_key = {}
         for key in jwks['keys']:
             if key['kid'] == unverified_header['kid']:

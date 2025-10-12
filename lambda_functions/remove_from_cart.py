@@ -7,12 +7,12 @@ from modules.database import cart_table, products_table
 
 user_pool_id = os.environ.get("USER_POOL_ID")
 region = os.environ.get("REGION", "ap-south-1")
-
+app_client_id = os.environ.get("APP_CLIENT_ID")
 
 def lambda_handler(event, context):
     try:
         token = event['headers'].get('Authorization', '').replace('Bearer ', '')
-        if not validate_token(token, user_pool_id, region):
+        if not validate_token(token, user_pool_id, app_client_id, region):
             return {'statusCode': 401, 'body': json.dumps({'error': 'Invalid token'})}
         
         body = json.loads(event['body'])
