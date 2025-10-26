@@ -114,6 +114,3 @@ This portfolio project demonstrates expertise in:
 - Python Backend Development
 - Cloud-Native Development Practices
 
-## License
-
-[Add your chosen license here]
