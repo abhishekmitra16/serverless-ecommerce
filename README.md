@@ -52,7 +52,7 @@ The platform is built using the following AWS services:
 
 1. Clone the repository:
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/abhishekmitra16/serverless-ecommerce.git
    cd serverless-ecommerce
    ```
 
